@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "rootDir": "./src", // Highly Recommended
+    "outDir": "./dist", // Highly Recommended
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true, // Keeps your imports clean
+    "paths": {
+      "@my-db/client": ["./generated/prisma"]
+    },
+    "types": ["node"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "prisma"]
+}
