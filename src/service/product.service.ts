@@ -1,6 +1,5 @@
 import { prisma } from "../lib/prisma";
 import { Prisma } from "../generated/prisma/client";
-import bcrypt from "bcryptjs";
 import type { CreateProductDto, UpdateProductDto } from "../dtos/product.dto";
 import AppError from "../utils/AppError";
 
