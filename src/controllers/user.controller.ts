@@ -76,8 +76,8 @@ class UserController {
   // DELETE USER
   static async deleteUser(req: Request, res: Response) {
     try {
-      const userId = req.user!.id;
-      await userService.remove(userId);
+      const userId = req.params.id || req.user!.id;
+      await userService.remove(userId as string);
 
       res.clearCookie("token", {
         httpOnly: true,
