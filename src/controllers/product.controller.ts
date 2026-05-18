@@ -24,6 +24,23 @@ class ProductController {
     }
   }
 
+  // GET PRODUCT BY USERID
+  static async getProductsByUser(req: Request, res: Response) {
+    try {
+      const userId = req.params.id || req.user!.id;
+      const product = await productService.getAll(userId as string);
+
+      res.status(200).json({
+        message: "Showing product by user",
+        success: true,
+        count: product.length,
+        data: product,
+      });
+    } catch (error: any) {
+      res.status(error.statusCode ?? 500).json({ error: error.message });
+    }
+  }
+
   // CREATE
   static async createProduct(req: Request, res: Response) {
     try {
