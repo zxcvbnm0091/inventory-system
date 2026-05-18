@@ -3,6 +3,7 @@ import productController from "../controllers/product.controller";
 import validate from "../middlewares/validate";
 import { CreateProductSchema, UpdateProductSchema } from "../dtos/product.dto";
 import { protect } from "../middlewares/auth.middleware";
+
 const router = express.Router();
 
 router.get("/all", protect, productController.getAllProduct);
@@ -23,3 +24,5 @@ router.patch(
 );
 
 router.post("/delete/:id", protect, productController.deleteProduct);
+
+export default router;
