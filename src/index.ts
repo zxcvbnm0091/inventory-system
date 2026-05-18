@@ -1,8 +1,8 @@
 import "dotenv/config";
 import app from "./app";
 import { prisma } from "./lib/prisma";
-
-const PORT = process.env.PORT || 3000;
+import config from "./config/config";
+const PORT = config.port;
 
 let server: ReturnType<typeof app.listen>;
 

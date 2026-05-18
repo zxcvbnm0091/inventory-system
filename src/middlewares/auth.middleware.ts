@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
+import config from "../config/config";
 
 interface JwtPayload {
   id: string;
@@ -15,7 +16,7 @@ declare global {
   }
 }
 
-if (!process.env.JWT_SECRET) {
+if (!config.jwt.secret) {
   throw new Error("JWT_SECRET environment variable is not configured");
 }
 
@@ -34,7 +35,7 @@ export const protect = async (
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET as string,
+      config.jwt.secret as string,
     ) as JwtPayload;
 
     req.user = decoded;

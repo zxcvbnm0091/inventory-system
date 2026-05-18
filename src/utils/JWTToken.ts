@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { Response } from "express";
 import type { JWTPayload } from "../types/index";
+import config from "../config/config";
 
 const getMilliseconds = (timeStr: string): number => {
   const unit = timeStr.slice(-1);
@@ -23,12 +24,12 @@ const sendTokenResponse = (
   statusCode: number,
   res: Response,
 ): void => {
-  if (!process.env.JWT_SECRET) {
+  if (!config.jwt.secret) {
     throw new Error("JWT_SECRET environment variable is required");
   }
-  const durationMs = getMilliseconds(process.env.EXPIRES_IN ?? "7d");
+  const durationMs = getMilliseconds(config.jwt.expiresIn ?? "7d");
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+  const token = jwt.sign(payload, config.jwt.secret, {
     expiresIn: durationMs / 1000,
   });
 
@@ -37,7 +38,7 @@ const sendTokenResponse = (
     .cookie("token", token, {
       expires: new Date(Date.now() + durationMs),
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: config.env === "production",
       sameSite: "strict",
     })
     .json({
