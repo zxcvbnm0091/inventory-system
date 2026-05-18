@@ -5,10 +5,10 @@ import {
   CreateCategorySchema,
   UpdateCategorySchema,
 } from "../dtos/category.dto";
-import { protect, authorizeRoles } from "../middlewares/auth.middleware";
+import { protect } from "../middlewares/auth.middleware";
 const router = express.Router();
 
-router.get("/all", protect, categoryController.getAllCategory);
+router.get("/", protect, categoryController.getAllCategory);
 router.get("/:id", protect, categoryController.getCategoryById);
 
 router.post(
@@ -26,3 +26,5 @@ router.patch(
 );
 
 router.post("/delete/:id", protect, categoryController.deleteCategory);
+
+export default router;
