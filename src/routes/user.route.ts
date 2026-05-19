@@ -14,7 +14,7 @@ router.post(
   validate(CreateUserSchema),
   UserController.createUser,
 );
-router.get("/all", protect, authorizeRoles("ADMIN"), UserController.getAllUser);
+router.get("/", protect, authorizeRoles("ADMIN"), UserController.getAllUser);
 router.get("/:id", protect, UserController.getUserById);
 
 router.patch(
@@ -24,7 +24,6 @@ router.patch(
   UserController.updateUser,
 );
 router.delete("/:id", protect, UserController.deleteUser);
-
 router.get("/:id/products", protect, ProductController.getProductsByUser);
 router.get("/:id/orders", protect, OrderController.getAllOrder);
 
