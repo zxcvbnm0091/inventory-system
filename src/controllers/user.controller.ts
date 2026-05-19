@@ -1,98 +1,74 @@
 import * as userService from "../service/user.service";
 import type { Request, Response } from "express";
 import type { CreateUserDto, UpdateUserDto } from "../dtos/user.dto";
+import catchAsync from "../utils/catchAsync";
+import config from "../config/config";
 
 class UserController {
   // GET ALL USERS
-  static async getAllUser(req: Request, res: Response) {
-    try {
-      const users = await userService.getAll();
+  static getAllUser = catchAsync(async (req: Request, res: Response) => {
+    const users = await userService.getAll();
 
-      res.status(200).json({
-        message: "Fetch all users",
-        success: true,
-        count: users.length,
-        data: users,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({
-        error: error.message,
-      });
-    }
-  }
+    res
+      .status(200)
+      .json({ message: "Fetch all users", success: true, data: users });
+  });
 
   // GET USER BY ID
-  static async getUserById(req: Request, res: Response) {
-    try {
-      const { id } = req.params as { id: string };
-      const user = await userService.getById(id);
+  static getUserById = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const user = await userService.getById(id);
 
-      res.status(200).json({
-        message: "Fetch user",
-        success: true,
-        data: user,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({
-        error: error.message,
-      });
-    }
-  }
+    res.status(200).json({
+      message: `Fetch user with id: ${id}`,
+      success: true,
+      data: user,
+    });
+  });
 
   // CREATE NEW USER
-  static async createUser(req: Request, res: Response) {
-    try {
-      const newUser = await userService.create(req.body as CreateUserDto);
-      res
-        .status(201)
-        .json({ message: "User created", success: true, data: newUser });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+  static createUser = catchAsync(async (req: Request, res: Response) => {
+    const userData: CreateUserDto = req.body;
+    const user = await userService.create(userData);
+
+    res
+      .status(201)
+      .json({ message: "User created", success: true, data: user });
+  });
 
   // UPDATE USER
-  static async updateUser(req: Request, res: Response) {
-    try {
-      const userId = req.user!.id;
+  static updateUser = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const updateData: UpdateUserDto = req.body;
 
-      const updateUser = await userService.update(
-        userId,
-        req.body as UpdateUserDto,
-      );
+    const user = await userService.update(id, updateData);
 
-      res.status(200).json({
-        message: "Used data updated",
-        success: true,
-        data: updateUser,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({
-        error: error.message,
-      });
-    }
-  }
+    res
+      .status(200)
+      .json({ message: "User data updated", success: true, data: user });
+  });
 
   // DELETE USER
-  static async deleteUser(req: Request, res: Response) {
-    try {
-      const userId = req.params.id || req.user!.id;
-      await userService.remove(userId as string);
+  // admin
+  static deleteUser = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    await userService.remove(id);
 
-      res.clearCookie("token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      });
+    res.status(200).json({ message: "User deleted", success: true });
+  });
+  // logged user
+  static deleteOwnAccount = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.user as { id: string };
+    await userService.remove(id);
 
-      res.status(200).json({
-        message: "User deleted",
-        success: true,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: config.env === "production",
+      sameSite: "strict",
+    });
+
+    res.status(200).json({ message: "User deleted", success: true });
+  });
 }
 
 export default UserController;
