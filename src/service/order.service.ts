@@ -1,8 +1,8 @@
 import { prisma } from "../lib/prisma";
 import { Prisma } from "../generated/prisma/client";
 import type { CreateOrderDto, UpdateOrderDto } from "../dtos/order.dto";
-import AppError from "../utils/AppError";
-
+import ApiError from "../utils/ApiError";
+import { status } from "http-status";
 const orderSelect = {
   id: true,
   status: true,
@@ -27,7 +27,7 @@ const getById = async (orderId: string) => {
   });
 
   if (!order) {
-    throw new AppError("order not found", 404);
+    throw new ApiError(status.NOT_FOUND, "order not found");
   }
 
   return order;
@@ -50,7 +50,7 @@ const update = async (orderId: string, dto: UpdateOrderDto) => {
     where: { id: orderId },
   });
 
-  if (!order) throw new AppError("order not found", 404);
+  if (!order) throw new ApiError(status.NOT_FOUND, "order not found");
 
   const updateOrder = await prisma.order.update({
     where: { id: orderId },

@@ -1,12 +1,11 @@
 import { prisma } from "../lib/prisma";
 import { Prisma } from "../generated/prisma/client";
-import bcrypt from "bcryptjs";
 import type {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from "../dtos/category.dto";
-import AppError from "../utils/AppError";
-
+import ApiError from "../utils/ApiError";
+import { status } from "http-status";
 const getAll = async () => {
   return await prisma.category.findMany({
     select: {
@@ -22,7 +21,7 @@ const getById = async (categoryId: string) => {
   });
 
   if (!category) {
-    throw new AppError("Category Not Found", 404);
+    throw new ApiError(status.NOT_FOUND, "Category Not Found");
   }
 
   return category;
@@ -34,7 +33,7 @@ const create = async (dto: CreateCategoryDto) => {
   });
 
   if (existingcategory) {
-    throw new AppError("Category already exists", 409);
+    throw new ApiError(status.CONFLICT, "Category already exists");
   }
 
   const categorySelect: Prisma.CategorySelect = {
@@ -57,7 +56,7 @@ const update = async (categoryId: string, dto: UpdateCategoryDto) => {
     where: { id: categoryId },
   });
   if (!category) {
-    throw new AppError("Category not found", 404);
+    throw new ApiError(status.NOT_FOUND, "Category not found");
   }
 
   const data = { ...dto };

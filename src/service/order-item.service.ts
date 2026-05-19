@@ -4,8 +4,8 @@ import type {
   CreateOrderItemDto,
   UpdateOrderItemDto,
 } from "../dtos/order-item.dto";
-import AppError from "../utils/AppError";
-
+import ApiError from "../utils/ApiError";
+import { status } from "http-status";
 const orderItemSelect = {
   id: true,
   orderId: true,
@@ -27,7 +27,7 @@ const getById = async (orderItemId: string) => {
     select: orderItemSelect,
   });
 
-  if (!orderItem) throw new AppError("Order item not found", 404);
+  if (!orderItem) throw new ApiError(status.NOT_FOUND, "Order item not found");
 
   return orderItem;
 };
@@ -35,15 +35,15 @@ const getById = async (orderItemId: string) => {
 const create = async (dto: CreateOrderItemDto) => {
   // check order exists
   const order = await prisma.order.findUnique({ where: { id: dto.orderId } });
-  if (!order) throw new AppError("Order not found", 404);
+  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
 
   // check product exists and has enough stock
   const product = await prisma.product.findUnique({
     where: { id: dto.productId },
   });
-  if (!product) throw new AppError("Product not found", 404);
+  if (!product) throw new ApiError(status.NOT_FOUND, "Product not found");
   if (product.quantityInStock < dto.quantity) {
-    throw new AppError("Insufficient stock", 400);
+    throw new ApiError(status.BAD_REQUEST, "Insufficient stock");
   }
 
   const newOrderItem = await prisma.orderItem.create({

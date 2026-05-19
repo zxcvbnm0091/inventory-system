@@ -1,7 +1,8 @@
 import { prisma } from "../lib/prisma";
 import { Prisma } from "../generated/prisma/client";
 import type { CreateProductDto, UpdateProductDto } from "../dtos/product.dto";
-import AppError from "../utils/AppError";
+import ApiError from "../utils/ApiError";
+import { status } from "http-status";
 
 const productSelect = {
   id: true,
@@ -28,7 +29,7 @@ const getById = async (productId: string) => {
   });
 
   if (!product) {
-    throw new AppError("Product not found", 404);
+    throw new ApiError(status.NOT_FOUND, "Product not found");
   }
 
   return product;
@@ -51,7 +52,7 @@ const update = async (productId: string, dto: UpdateProductDto) => {
     where: { id: productId },
   });
 
-  if (!product) throw new AppError("Product not found", 404);
+  if (!product) throw new ApiError(status.NOT_FOUND, "Product not found");
 
   const updateProduct = await prisma.product.update({
     where: { id: productId },

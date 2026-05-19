@@ -2,8 +2,8 @@ import { prisma } from "../lib/prisma";
 import { Prisma } from "../generated/prisma/client";
 import bcrypt from "bcryptjs";
 import type { CreateUserDto, UpdateUserDto } from "../dtos/user.dto";
-import AppError from "../utils/AppError";
-
+import ApiError from "../utils/ApiError";
+import { status } from "http-status";
 const hash = async (password: string) => {
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
@@ -29,7 +29,7 @@ const getById = async (userId: string) => {
   });
 
   if (!user) {
-    throw new AppError("User Not Found", 404);
+    throw new ApiError(status.NOT_FOUND, "User Not Found");
   }
 
   return user;
@@ -41,7 +41,7 @@ const create = async (dto: CreateUserDto) => {
   });
 
   if (existingUser) {
-    throw new AppError("User already exists", 409);
+    throw new ApiError(status.CONFLICT, "User already exists");
   }
 
   const passwordHash = await hash(dto.password);
@@ -68,7 +68,7 @@ const create = async (dto: CreateUserDto) => {
 const update = async (userId: string, dto: UpdateUserDto) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new ApiError(status.NOT_FOUND, "User not found");
   }
 
   const data = { ...dto };

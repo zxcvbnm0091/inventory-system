@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
 import config from "../config/config";
+import ApiError from "../utils/ApiError";
+import status from "http-status";
 
 interface JwtPayload {
   id: string;
@@ -28,8 +30,9 @@ export const protect = async (
   const token = req.cookies?.token as string | undefined;
 
   if (!token) {
-    res.status(401).json({ error: "Not authorized, please login" });
-    return;
+    return next(
+      new ApiError(status.UNAUTHORIZED, "Not authorized, please login"),
+    );
   }
 
   try {
@@ -41,16 +44,18 @@ export const protect = async (
     req.user = decoded;
     next();
   } catch {
-    res.status(401).json({ error: "Token is invalid or expired" });
-    return;
+    return next(
+      new ApiError(status.UNAUTHORIZED, "Token is invalid or expired"),
+    );
   }
 };
 
 export const authorizeRoles = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user || !roles.includes(req.user.role)) {
-      res.status(403).json({ error: "Forbidden: insufficient permissions" });
-      return;
+      return next(
+        new ApiError(status.FORBIDDEN, "Forbidden: insufficient permissions"),
+      );
     }
     next();
   };
