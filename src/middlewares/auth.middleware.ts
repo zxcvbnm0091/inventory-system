@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-if (!config.jwt.secret) {
+if (!config.jwt.access) {
   throw new Error("JWT_SECRET environment variable is not configured");
 }
 
@@ -27,7 +27,7 @@ export const protect = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
-  const token = req.cookies?.token as string | undefined;
+  const token = req.cookies?.accessToken as string | undefined;
 
   if (!token) {
     return next(
@@ -38,7 +38,7 @@ export const protect = async (
   try {
     const decoded = jwt.verify(
       token,
-      config.jwt.secret as string,
+      config.jwt.access as string,
     ) as JwtPayload;
 
     req.user = decoded;
