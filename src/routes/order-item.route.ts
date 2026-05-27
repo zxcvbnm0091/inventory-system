@@ -10,19 +10,19 @@ import {
 const router = express.Router();
 
 router.get("/", protect, OrderItemController.getAll);
-router.get("/:orderItemId", protect, OrderItemController.getById);
+router.get("/:orderItemId", protect, OrderItemController.getOrderItemById);
 router.post(
   "/",
   protect,
   validate(CreateOrderItemSchema),
-  OrderItemController.create,
+  OrderItemController.createOrderItem,
 );
 router.put(
   "/:orderItemId",
   protect,
   validate(UpdateOrderItemSchema),
-  OrderItemController.update,
+  OrderItemController.updateOrderItem,
 );
-router.delete("/:orderItemId", protect, OrderItemController.remove);
+router.delete("/:orderItemId", protect, OrderItemController.deleteOrderItem);
 
 export default router;
