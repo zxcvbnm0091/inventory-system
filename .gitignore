@@ -11,6 +11,7 @@ dist/
 
 # Prisma
 generated/prisma/
+src/generated/
 
 # Logs
 logs/
