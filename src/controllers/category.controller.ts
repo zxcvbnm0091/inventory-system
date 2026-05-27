@@ -4,102 +4,72 @@ import type {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from "../dtos/category.dto";
+import catchAsync from "../utils/catchAsync";
+import status from "http-status";
 
 class categoryController {
-  // GET ALL categoryS
-  static async getAllCategory(req: Request, res: Response) {
-    try {
-      const categories = await categoryService.getAll();
+  // GET ALL CATEGORIES
+  static getAllCategory = catchAsync(async (req: Request, res: Response) => {
+    const categories = await categoryService.getAll();
 
-      res.status(200).json({
-        message: "Fetch all categories",
-        success: true,
-        count: categories.length,
-        data: categories,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({
-        error: error.message,
-      });
-    }
-  }
+    res.status(status.OK).json({
+      message: "Fetch all category",
+      success: true,
+      count: categories.length,
+      data: categories,
+    });
+  });
 
-  // GET category BY ID
-  static async getCategoryById(req: Request, res: Response) {
-    try {
-      const { id } = req.params as { id: string };
-      const category = await categoryService.getById(id);
+  // GET CATEGORY BY ID
+  static getCategoryById = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const category = await categoryService.getById(id);
 
-      res.status(200).json({
-        message: "Fetch category",
-        success: true,
-        data: category,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({
-        error: error.message,
-      });
-    }
-  }
+    res.status(status.OK).json({
+      message: "Fetch category",
+      success: true,
+      data: category,
+    });
+  });
 
-  // CREATE NEW category
-  static async createCategory(req: Request, res: Response) {
-    try {
-      const newcategory = await categoryService.create(
-        req.body as CreateCategoryDto,
-      );
-      res.status(201).json({
-        message: "category created",
-        success: true,
-        data: newcategory,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+  // CREATE CATEGORY
+  static createCategory = catchAsync(async (req: Request, res: Response) => {
+    const newcategory = await categoryService.create(
+      req.body as CreateCategoryDto,
+    );
 
-  // UPDATE category
-  static async updateCategory(req: Request, res: Response) {
-    try {
-      const { id } = req.params as { id: string };
+    res.status(status.CREATED).json({
+      message: "Category Created",
+      success: true,
+      data: newcategory,
+    });
+  });
 
-      const updatecategory = await categoryService.update(
-        id,
-        req.body as UpdateCategoryDto,
-      );
+  // UPDATE CATEGORY
+  static updateCategory = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const updatedCategory = await categoryService.update(
+      id,
+      req.body as UpdateCategoryDto,
+    );
 
-      res.status(200).json({
-        message: "Used data updated",
-        success: true,
-        data: updatecategory,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({
-        error: error.message,
-      });
-    }
-  }
+    res.status(status.OK).json({
+      message: "Category updated",
+      success: true,
+      data: updatedCategory,
+    });
+  });
 
-  // DELETE category
-  static async deleteCategory(req: Request, res: Response) {
-    try {
-      const { id } = req.params as { id: string };
-      await categoryService.remove(id);
+  // DELETE CATEGORY
+  static deleteCategory = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    await categoryService.remove(id);
 
-      res.clearCookie("token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      });
-
-      res.status(200).json({
-        message: "category deleted",
-        success: true,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+    res.status(status.OK).json({
+      message: "Category deleted",
+      success: true,
+    });
+  });
 }
 
 export default categoryController;
