@@ -1,7 +1,6 @@
 import * as orderService from "../service/order.service";
 import type { Request, Response } from "express";
 import type { CreateOrderDto, UpdateOrderDto } from "../dtos/order.dto";
-import { success } from "zod";
 
 class OrderController {
   // GET ALL
