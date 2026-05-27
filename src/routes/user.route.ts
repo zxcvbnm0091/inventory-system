@@ -24,7 +24,7 @@ router.patch(
   UserController.updateUser,
 );
 router.delete("/:id", protect, UserController.deleteUser);
-router.get("/:id/products", protect, ProductController.getProductsByUser);
+router.get("/:id/products", protect, ProductController.getProductByUser);
 router.get("/:id/orders", protect, OrderController.getAllOrder);
 
 export default router;
