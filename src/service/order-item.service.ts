@@ -51,6 +51,11 @@ const create = async (dto: CreateOrderItemDto) => {
     select: orderItemSelect,
   });
 
+  await prisma.product.update({
+    where: { id: dto.productId },
+    data: { quantityInStock: { decrement: dto.quantity } },
+  });
+
   return newOrderItem;
 };
 
