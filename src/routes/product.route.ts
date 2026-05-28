@@ -23,6 +23,6 @@ router.patch(
   productController.updateProduct,
 );
 
-router.post("/delete/:id", protect, productController.deleteProduct);
+router.delete("/:id", protect, productController.deleteProduct);
 
 export default router;
