@@ -1,92 +1,76 @@
 import * as orderService from "../service/order.service";
 import type { Request, Response } from "express";
 import type { CreateOrderDto, UpdateOrderDto } from "../dtos/order.dto";
+import catchAsync from "../utils/catchAsync";
+import status from "http-status";
 
 class OrderController {
-  // GET ALL
-  static async getAllOrder(req: Request, res: Response) {
-    try {
-      const orders = await orderService.getAll();
-      res.status(200).json(orders);
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+  static getAllOrder = catchAsync(async (req: Request, res: Response) => {
+    const orders = await orderService.getAll();
 
-  // GET BY ID
-  static async getOrderById(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const order = await orderService.getById(id as string);
-      res.status(200).json(order);
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+    res.status(status.OK).json({
+      message: "Fetch all orders",
+      success: true,
+      data: orders,
+    });
+  });
 
-  // GET PRODUCT BY USERID
-  static async getOrdersByUser(req: Request, res: Response) {
-    try {
-      const userId = req.params.id || req.user!.id;
-      const orders = await orderService.getAll(userId as string);
+  static getOrderById = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const order = await orderService.getById(id);
 
-      res.status(200).json({
-        message: "Showing orders by user",
-        success: true,
-        count: orders.length,
-        data: orders,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+    res.status(status.OK).json({
+      message: `Showing order by id ${id}`,
+      success: true,
+      data: order,
+    });
+  });
 
-  // CREATE
-  static async createOrder(req: Request, res: Response) {
-    try {
-      const userId = req.user!.id;
-      const order = await orderService.create(
-        req.body as CreateOrderDto,
-        userId,
-      );
-      res.status(201).json({
-        message: "Order created",
-        success: true,
-        data: order,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+  static getOrderByUser = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.params.id || req.user!.id;
+    const orders = await orderService.getAll(userId as string);
 
-  // UPDATE
-  static async updateOrder(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const order = await orderService.update(
-        id as string,
-        req.body as UpdateOrderDto,
-      );
-      res.status(200).json({
-        message: "Order updated",
-        success: true,
-        data: order,
-      });
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+    res.status(status.OK).json({
+      message: "Showing orders by user",
+      success: true,
+      data: orders,
+    });
+  });
 
-  // DELETE
-  static async deleteOrder(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      await orderService.remove(id as string);
-      res.status(204).send();
-    } catch (error: any) {
-      res.status(error.statusCode ?? 500).json({ error: error.message });
-    }
-  }
+  static createOrder = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const data = req.body as CreateOrderDto;
+    const order = await orderService.create(data, userId);
+
+    res.status(status.CREATED).json({
+      message: "Order created",
+      success: true,
+      data: order,
+    });
+  });
+
+  static updateOrder = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const data = req.body as UpdateOrderDto;
+    const order = await orderService.update(id, data);
+
+    res.status(status.OK).json({
+      message: "Order updated",
+      success: true,
+      data: order,
+    });
+  });
+
+  static deleteOrder = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+
+    await orderService.remove(id);
+
+    res.status(status.NO_CONTENT).json({
+      message: "Order deleted",
+      success: true,
+    });
+  });
 }
 
 export default OrderController;
