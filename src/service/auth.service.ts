@@ -76,9 +76,7 @@ const logout = async (refreshToken: string) => {
       userId: string;
     };
     await prisma.token.delete({ where: { userId: payload.userId } });
-  } catch {
-    // token already invalid, nothing to delete
-  }
+  } catch {}
 };
 
 export { login, register, refresh, logout };

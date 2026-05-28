@@ -84,7 +84,6 @@ class AuthController {
 
   // LOGOUT
   static logout = catchAsync(async (req: Request, res: Response) => {
-    // delete from DB so the token can't be reused
     await authService.logout(req.cookies?.refreshToken);
 
     res
