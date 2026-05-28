@@ -25,6 +25,6 @@ router.patch(
   categoryController.updateCategory,
 );
 
-router.post("/delete/:id", protect, categoryController.deleteCategory);
+router.delete("/:id", protect, categoryController.deleteCategory);
 
 export default router;
