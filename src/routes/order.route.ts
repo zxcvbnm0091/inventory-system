@@ -2,7 +2,7 @@ import express from "express";
 import orderController from "../controllers/order.controller";
 import validate from "../middlewares/validate";
 import { CreateOrderSchema, UpdateOrderSchema } from "../dtos/order.dto";
-import OrderItemController from "../controllers/order.controller";
+import OrderItemController from "../controllers/order-item.controller";
 import { protect } from "../middlewares/auth.middleware";
 
 const router = express.Router();
@@ -24,10 +24,10 @@ router.patch(
   orderController.updateOrder,
 );
 
-router.post("/delete/:id", protect, orderController.deleteOrder);
+router.delete("/:id", protect, orderController.deleteOrder);
 router.get(
   "/:orderId/order-items",
   protect,
-  OrderItemController.getOrdersByUser,
+  OrderItemController.getOrderItemByOrder,
 );
 export default router;
