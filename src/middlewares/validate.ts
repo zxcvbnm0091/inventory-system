@@ -4,10 +4,7 @@ import z, { type ZodType } from "zod";
 const validate =
   (schema: ZodType) =>
   (req: Request, res: Response, next: NextFunction): void => {
-    console.log("validate middleware hit");
-    console.log("req.body:", req.body);
     const result = schema.safeParse(req.body);
-    console.log("validation result:", result);
 
     if (!result.success) {
       res.status(400).json(z.treeifyError(result.error));
