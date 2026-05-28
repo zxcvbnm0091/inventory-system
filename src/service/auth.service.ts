@@ -44,8 +44,8 @@ const refresh = async (refreshToken: string) => {
     where: { userId: payload.userId },
   });
 
-  if (!existing || existing.token !== refreshToken) {
-    throw new Error("Invalid refresh token");
+  if (!existing || existing.token !== refreshToken || existing.blacklisted) {
+    throw new ApiError(status.UNAUTHORIZED, "Invalid refresh token");
   }
 
   const newToken = generateRefreshToken({ userId: payload.userId });
